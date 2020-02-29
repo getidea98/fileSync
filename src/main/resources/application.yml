@@ -1,0 +1,18 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://39.106.163.180:3306/fileSync
+    username: root
+    password: Abc331433
+    driver-class-name: com.mysql.jdbc.Driver
+
+github:
+  client_id: 646df6fb04bb468d8d6a
+  client_secret: 524e1b5c98289a04d46f2c86418800ed49a71511
+  redirect_uri: http://localhost:8080/callback
+
+
+save:
+  folder: /Users/miaoyimin/temp
