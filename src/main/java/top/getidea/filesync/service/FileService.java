@@ -16,7 +16,9 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 /**
- * @Description :
+ * @Description : upLoadFile：文件上传处理；
+ * UserLog2Bean：多参数合并成Bean
+ * File2Bean：多参数合并成Bean
  * @Author : Getidea
  * @Date: 2020-02-29 12:16
  */
@@ -55,6 +57,14 @@ public class FileService {
         return false;
     }
 
+    /**
+     * @Dercription: 多参数合并成Bean
+     * @param srcFile
+     * @param creator
+     * @param platform
+     * @param id
+     * @return
+     */
     UserLog UserLog2Bean(MultipartFile srcFile,String creator,String platform,String id) {
         UserLog userLog = new UserLog();
         userLog.setAccount(creator);
@@ -66,6 +76,13 @@ public class FileService {
         return userLog;
     }
 
+    /**
+     * @Dercription: 多参数合并成Bean
+     * @param srcFile
+     * @param creator
+     * @param token
+     * @return
+     */
     top.getidea.filesync.module.File File2Bean(MultipartFile srcFile, String creator, String token){
         top.getidea.filesync.module.File file = new top.getidea.filesync.module.File();
         file.setCreator(creator);

@@ -2,7 +2,6 @@ package top.getidea.filesync.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 import top.getidea.filesync.DTO.GitHubAccess;
 import top.getidea.filesync.DTO.UpLoadFileDTO;
 import top.getidea.filesync.mapper.UserLogMapper;
@@ -31,12 +30,12 @@ public class AuthorizeService {
     /**
      * @Description : 查询数据库；根据查询结果，返回是否有当前账号 1：无，2：有
      *                若有当前结果，把本次登录记录插入UserLog表
-     * @param id
+     * @param account
      * @param password
      * @return resultMap
      */
-    public Object login(String id, String password, String platform) {
-        User result = userMapper.queryByIdAndPassword(id,password);
+    public Object login(String account, String password, String platform) {
+        User result = userMapper.queryByAccountAndPassword(account,password);
         if(result == null){
             resultMap.put("status",1);
         }else{
@@ -68,6 +67,10 @@ public class AuthorizeService {
     }
 
     public boolean isOnline(UpLoadFileDTO upLoadFileDTO){
-
+        Object object = userMapper.queryByAccountAndPassword(upLoadFileDTO.getAccount(),upLoadFileDTO.getPassword());
+        if(object == null){
+            return false;
+        }
+        return true;
     }
 }
