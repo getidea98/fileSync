@@ -2,8 +2,9 @@ package top.getidea.filesync.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import top.getidea.filesync.DTO.AuthorizeDTO;
 import top.getidea.filesync.DTO.GitHubAccess;
-import top.getidea.filesync.DTO.UpLoadFileDTO;
+import top.getidea.filesync.DTO.MessageDTO;
 import top.getidea.filesync.mapper.UserLogMapper;
 import top.getidea.filesync.mapper.UserMapper;
 import top.getidea.filesync.module.User;
@@ -25,27 +26,37 @@ public class AuthorizeService {
     @Autowired
     UserLogMapper userLogMapper;
 
-    Map<String,Object> resultMap = new HashMap<>();
+    @Autowired
+    FileService fileService;
+
 
     /**
-     * @Description : 查询数据库；根据查询结果，返回是否有当前账号 1：无，2：有
-     *                若有当前结果，把本次登录记录插入UserLog表
-     * @param account
-     * @param password
+     * @Description : 查询数据库；根据查询结果，返回是否有当前账号
+     *
+     * @param authorizeDTO
      * @return resultMap
      */
-    public Object login(String account, String password, String platform) {
-        User result = userMapper.queryByAccountAndPassword(account,password);
+    public Object login(AuthorizeDTO authorizeDTO) {
+        Map<Object,Object> resultMap = new HashMap<>();
+        User result = userMapper.queryByAccountAndPassword(authorizeDTO.getAccount(),authorizeDTO.getPassword());
         if(result == null){
-            resultMap.put("status",1);
+            resultMap.put("1","后台没有您的数据呦");
         }else{
-            UserLog userLog= UserLog2Bean(platform,result);
+            UserLog userLog= UserLog2Bean(authorizeDTO.getPlatform(),result);
+            //操作记录
             userLogMapper.insert(userLog);
-            resultMap.put("status",2);
+            resultMap.put("2","登陆成功");
+            resultMap.put("result",fileService.queryAllByAccount(authorizeDTO));
         }
-        return resultMap;
+        return fileService.queryAllByAccount(authorizeDTO);
     }
 
+    /**
+     * @Descritpin：多参数合成Bean
+     * @param platform
+     * @param user
+     * @return
+     */
     UserLog UserLog2Bean(String platform,User user){
         UserLog userLog = new UserLog();
         userLog.setAccount(user.getAccount());
@@ -57,6 +68,11 @@ public class AuthorizeService {
         return userLog;
     }
 
+    /**
+     * @Description：根据前端来的数据，将新注册的用户插入数据库
+     * @param gitHubAccessInfo
+     * @return
+     */
     public Integer register(GitHubAccess gitHubAccessInfo) {
         User user = new User();
         user.setAccount(gitHubAccessInfo.getId());
@@ -66,11 +82,7 @@ public class AuthorizeService {
         return userMapper.insert(user);
     }
 
-    public boolean isOnline(UpLoadFileDTO upLoadFileDTO){
-        Object object = userMapper.queryByAccountAndPassword(upLoadFileDTO.getAccount(),upLoadFileDTO.getPassword());
-        if(object == null){
-            return false;
-        }
-        return true;
+    public User isOnline(MessageDTO messageDTO){
+        return userMapper.queryByAccountAndPassword(messageDTO.getAccount(),messageDTO.getPassword());
     }
 }

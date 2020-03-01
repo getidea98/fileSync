@@ -1,7 +1,11 @@
 package top.getidea.filesync.controller;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import top.getidea.filesync.service.AuthorizeService;
+import top.getidea.filesync.service.FileService;
 
 /**
  * @Description :
@@ -11,8 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexController {
 
-    @RequestMapping("/")
+    @Autowired
+    AuthorizeService authorizeService;
+
+    @Autowired
+    FileService fileService;
+
+    @GetMapping("/")
     public String index(){
-        return "index";
+        return "signin";
     }
 }

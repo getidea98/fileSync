@@ -16,3 +16,7 @@ github:
 
 save:
   folder: /Users/miaoyimin/temp
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

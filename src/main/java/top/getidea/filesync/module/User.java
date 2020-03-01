@@ -14,4 +14,5 @@ public class User {
     private long gmtModified;
     private long gmtCreate;
     private String name;
+    private String password;
 }

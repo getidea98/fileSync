@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class AuthorizeDTO {
-    private String id;
+    private String account;
     private String password;
     private String platform;
 }

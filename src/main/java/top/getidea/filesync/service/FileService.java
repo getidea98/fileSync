@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import top.getidea.filesync.DTO.AuthorizeDTO;
+import top.getidea.filesync.DTO.MessageDTO;
 import top.getidea.filesync.mapper.FileMapper;
 import top.getidea.filesync.mapper.UserLogMapper;
 import top.getidea.filesync.module.UserLog;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -94,5 +97,14 @@ public class FileService {
         file.setFileUrl(UPLOAD_FOLDER + File.separator + creator + File.separator + srcFile.getOriginalFilename());
         file.setToken(token);
         return file;
+    }
+
+    /**
+     * @Description: 根据creator查询所有文件;
+     * @param authorizeDTO
+     * @return
+     */
+    public List<top.getidea.filesync.module.File> queryAllByAccount(AuthorizeDTO authorizeDTO) {
+        return fileMapper.queryAllByAccount(authorizeDTO.getAccount());
     }
 }
