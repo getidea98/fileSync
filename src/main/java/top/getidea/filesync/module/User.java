@@ -15,4 +15,5 @@ public class User {
     private long gmtCreate;
     private String name;
     private String password;
+    private String token;
 }

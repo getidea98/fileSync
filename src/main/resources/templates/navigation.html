@@ -10,10 +10,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="/publish">共享文件</a>
-                    </li>
-                    <li th:if="${session.user == null}">
-                        <a th:text="${account}" href="https://github.com/login/oauth/authorize?client_id=652b8dbccd3e544616e8&redirect_uri=http://localhost:8080/callback&scope=user&state=1">登录</a>
+                        <a th:text="${account}"></a>
                     </li>
                 </ul>
             </div>

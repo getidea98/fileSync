@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import top.getidea.filesync.DTO.AuthorizeDTO;
-import top.getidea.filesync.DTO.MessageDTO;
 import top.getidea.filesync.mapper.FileMapper;
 import top.getidea.filesync.mapper.UserLogMapper;
 import top.getidea.filesync.module.UserLog;
@@ -101,10 +99,14 @@ public class FileService {
 
     /**
      * @Description: 根据creator查询所有文件;
-     * @param authorizeDTO
+     * @param account
      * @return
      */
-    public List<top.getidea.filesync.module.File> queryAllByAccount(AuthorizeDTO authorizeDTO) {
-        return fileMapper.queryAllByAccount(authorizeDTO.getAccount());
+    public List<top.getidea.filesync.module.File> queryAllByAccount(String  account) {
+        return fileMapper.queryAllByAccount(account);
+    }
+
+    public top.getidea.filesync.module.File queryByCreatorAndFileName(String account, String fileName) {
+        return fileMapper.queryByCreatorAndFileName(account,fileName);
     }
 }

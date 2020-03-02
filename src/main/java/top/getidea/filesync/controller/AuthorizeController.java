@@ -5,15 +5,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import top.getidea.filesync.DTO.AuthorizeDTO;
+import sun.plugin2.message.Message;
 import top.getidea.filesync.DTO.GitHubAccess;
 import top.getidea.filesync.DTO.GitHubAccessTokenDTO;
+import top.getidea.filesync.DTO.MessageDTO;
+import top.getidea.filesync.mapper.UserMapper;
+import top.getidea.filesync.module.User;
 import top.getidea.filesync.provide.GitHubProvide;
 import top.getidea.filesync.service.AuthorizeService;
 import top.getidea.filesync.service.FileService;
+import top.getidea.filesync.service.UserService;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Description :账户授权
@@ -28,6 +37,9 @@ public class AuthorizeController {
     AuthorizeService authorizeService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     FileService fileService;
 
     @Value("${github.client_id}")
@@ -36,18 +48,24 @@ public class AuthorizeController {
     @Value("${github.client_secret}")
     private String client_secret;
 
-    @RequestMapping("/login")
-    public String login(@RequestParam(name = "account") String account,
-                        @RequestParam(name = "password") String password,
-                        @RequestParam(name = "platform",defaultValue = "unknown") String platform,
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @ResponseBody
+    public Object login(@RequestBody @Valid MessageDTO messageDTO,
                         Model model){
-        AuthorizeDTO authorizeDTO = new AuthorizeDTO();
-        authorizeDTO.setPlatform(platform);
-        authorizeDTO.setPassword(password);
-        authorizeDTO.setAccount(account);
-        model.addAttribute("fileList",authorizeService.login(authorizeDTO));
-        model.addAttribute("account",account);
-        return "profile";
+        Map<Object,Object> result = new HashMap<>();
+        User user = userService.queryByAccount(messageDTO);
+        //判断密码是否正确
+        if(user != null){
+            user = user2Bean(user);
+            userService.updateById(user);
+            model.addAttribute("user",user);
+            result.put("status",2);
+            result.put("data",user);
+        }else{
+            result.put("status",1);
+            result.put("data",null);
+        }
+        return result;
     }
 
 
@@ -67,7 +85,6 @@ public class AuthorizeController {
         String ResponseCode = gitHubProvide.getGitHubAccessToken(gitHubAccessTokenDTO);
         GitHubAccess gitHubAccessInfo = gitHubProvide.getGitHubAccessInfo(ResponseCode);
         Integer registerResult = authorizeService.register(gitHubAccessInfo);
-
         if(registerResult == 0){
             return "注册失败";
         }else{
@@ -77,6 +94,22 @@ public class AuthorizeController {
             result.put("Profile","http://filesync.getidea.top/"+gitHubAccessInfo.getId());
             return result;
         }
+    }
+
+    /**
+     * @Description：退出登录处理
+     * @param response
+     * @param request
+     * @return
+     */
+    @GetMapping("/logout")
+    public String logout(HttpServletResponse response,
+                         HttpServletRequest request){
+        request.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token",null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return "redirect:/";
     }
 
     /**
@@ -91,4 +124,13 @@ public class AuthorizeController {
         gitHubAccessTokenDTO.setCode(code);
         return gitHubAccessTokenDTO;
     }
+
+    User user2Bean(User user){
+        //为本次添加token
+        String token = UUID.randomUUID().toString();
+        user.setToken(token);
+        user.setGmtModified(System.currentTimeMillis());
+        return user;
+    }
+
 }

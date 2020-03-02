@@ -2,7 +2,6 @@ package top.getidea.filesync.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import top.getidea.filesync.DTO.AuthorizeDTO;
 import top.getidea.filesync.DTO.GitHubAccess;
 import top.getidea.filesync.DTO.MessageDTO;
 import top.getidea.filesync.mapper.UserLogMapper;
@@ -33,22 +32,22 @@ public class AuthorizeService {
     /**
      * @Description : 查询数据库；根据查询结果，返回是否有当前账号
      *
-     * @param authorizeDTO
+     * @param messageDTO
      * @return resultMap
      */
-    public Object login(AuthorizeDTO authorizeDTO) {
+    public Object login(MessageDTO messageDTO) {
         Map<Object,Object> resultMap = new HashMap<>();
-        User result = userMapper.queryByAccountAndPassword(authorizeDTO.getAccount(),authorizeDTO.getPassword());
+        User result = userMapper.queryByAccountAndPassword(messageDTO.getAccount(),messageDTO.getPassword());
         if(result == null){
             resultMap.put("1","后台没有您的数据呦");
         }else{
-            UserLog userLog= UserLog2Bean(authorizeDTO.getPlatform(),result);
+            UserLog userLog= UserLog2Bean(messageDTO.getPlatform(),result);
             //操作记录
             userLogMapper.insert(userLog);
             resultMap.put("2","登陆成功");
-            resultMap.put("result",fileService.queryAllByAccount(authorizeDTO));
+            resultMap.put("result",fileService.queryAllByAccount(messageDTO.getAccount()));
         }
-        return fileService.queryAllByAccount(authorizeDTO);
+        return fileService.queryAllByAccount(messageDTO.getAccount());
     }
 
     /**

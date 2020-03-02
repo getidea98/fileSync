@@ -1,5 +1,7 @@
 package top.getidea.filesync.provide;
 
+import org.springframework.stereotype.Component;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
@@ -9,17 +11,16 @@ import java.net.URLEncoder;
  * @Author : Getidea
  * @Date: 2020-03-01 15:26
  */
+@Component
 public class FileUtil {
     /**
      * 下载项目根目录下doc下的文件
      * @param response response
-     * @param fileName 文件名
+     * @param fileSrc 文件名
      * @return 返回结果 成功或者文件不存在
      */
-    public static String downloadFile(HttpServletResponse response, String fileName) {
-        // 如果文件名不为空，则进行下载
-        if (fileName != null) {
-            File file = new File(fileName);
+    public String downloadFile(HttpServletResponse response, String fileSrc) {
+            File file = new File(fileSrc);
             // 如果文件存在，则进行下载
             if (file.exists()) {
                 // 配置文件下载
@@ -27,7 +28,7 @@ public class FileUtil {
                 response.setContentType("application/octet-stream");
                 // 下载文件能正常显示中文
                 try {
-                    response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName.split(File.separator)[fileName.split(File.separator).length-1], "UTF-8"));
+                    response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileSrc.split(File.separator)[fileSrc.split(File.separator).length-1], "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -68,7 +69,6 @@ public class FileUtil {
                     }
                 }
             }
-        }
         return "下载成功";
 
     }

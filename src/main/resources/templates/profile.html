@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${account}"></title>
+    <title>FileSync个人空间</title>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css">
 </head>
@@ -12,29 +13,30 @@
 <div th:insert="navigation :: nav"></div>
 <div class="row" style="margin-top: 40px">
     <div class="col-xs-6 col-md-12">
-        <table class="table table-condensed">
+        <table class="table table-condensed" id="app">
             <tr>
                 <th>文件名</th>
                 <th>文件大小</th>
                 <th>上传时间</th>
                 <th>共享时平台</th>
+                <th>状态</th>
             </tr>
-            <div th:each="file : ${fileList}">
-                <tr>
-                    <td><a th:text="${file.fileName}" th:href="@{Http://localhost:8080/downloadFile(account=${account},password=123,fileName=${file.fileName})}"></a></td>
-                    <td th:text="${file.fileSize}"></td>
-                    <td th:text="${file.gmtCreate}"></td>
+            <div>
+                <tr v-for="(file,index) in info" :key="index">
+                    <td><a :href="'http://localhost:8080/downloadFile?fileName='+file.fileName">{{file.fileName}}</a></td>
+                    <td>{{file.fileSize}}</td>
+                    <td>{{file.gmtCreate}}</td>
                     <td>unknown</td>
                     <td><a th:text="删除"></a></td>
                 </tr>
             </div>
         </table>
         <input type="file" name="file" id="file"/>
-        <input type="button" onclick="sendToUser()" id="sendToUser" value="提交" />
+        <input type="button" onclick="sendToUser()" id="sendToUser" value="提交"/>
     </div>
 </div>
 <script>
-    function sendToUser(){ //在这里进行ajax 文件上传 用户的信息
+    function sendToUser() { //在这里进行ajax 文件上传 用户的信息
         var $file1 = $("input[name='file']").val();//用户文件内容(文件)
         // 判断文件是否为空
         if ($file1 == "") {
@@ -43,25 +45,62 @@
         }
         var type = "file";
         var formData = new FormData();//这里需要实例化一个FormData来进行文件上传
-        formData.append(type,$("#file")[0].files[0]);
-        formData.append("account","49109682");
-        formData.append("password","123");
-        formData.append("platform","web");
+        formData.append(type, $("#file")[0].files[0]);
+        formData.append("account", "49109682");
+        formData.append("password", "123");
+        formData.append("platform", "web");
         $.ajax({
-            type : "post",
-            url : "http://localhost:8080/upLoadFile",
-            data : formData,
-            processData : false,
-            contentType : false,
-            success : function(data){
-                if (data=="error") {
+            type: "post",
+            url: "http://localhost:8080/upLoadFile",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (data == "error") {
                     alert("文件提交失败!");
-                }else{
+                } else {
                     $("input[name='userUrl']").val(data);
                     alert("文件上传成功!");
-                }}
+                }
+            }
         });
     }
+
+    new Vue({
+        el: '#app',
+        data: {
+            info: '',
+            account: '',
+            password: ''
+        },
+        mounted() {
+            axios.post('http://localhost:8080/session',
+                {
+                    headers: {"Content-Type": "application/json;charset=UTF-8"}
+                })
+                .then(response => {
+                    let params = response.data;
+                    this.account = response.data.account;
+                    this.password = response.data.password;
+                    console.log(this.account)
+                    axios.post('http://localhost:8080/profile',
+                        JSON.stringify(params),
+                        {
+                            headers: {"Content-Type": "application/json;charset=UTF-8"}
+                        })
+                        .then(response => {
+                            this.info = response.data;
+                            console.log(this.info);
+                        })
+                        .catch(function (error) { // 请求失败处理
+                            console.log(error);
+                        });
+                })
+                .catch(function (error) { // 请求失败处理
+
+                });
+        },
+    });
 </script>
 </body>
 </html>

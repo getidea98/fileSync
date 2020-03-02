@@ -2,7 +2,6 @@ package top.getidea.filesync.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import top.getidea.filesync.DTO.MessageDTO;
 import top.getidea.filesync.service.AuthorizeService;
 import top.getidea.filesync.service.FileService;
@@ -28,20 +27,12 @@ public class UpLoadFileController {
 
     @PostMapping("/upLoadFile")
     @ResponseBody
-    public Object upLoadFileByAndroid(@RequestParam(value = "account") String account,
-                                      @RequestParam(value = "password") String password,
-                                      @RequestParam(value = "platform",defaultValue = "unknown") String platform,
-                                      @RequestParam(value = "file", defaultValue = "") MultipartFile srcFile) {
+    public Object upLoadFileByAndroid(@Valid MessageDTO messageDTO) {
         Map<Object, Object> result = new HashMap<>();
-        //判断是否在线
-        MessageDTO messageDTO = new MessageDTO();
-        messageDTO.setPlatform(platform);
-        messageDTO.setPassword(password);
-        messageDTO.setAccount(account);
         if (authorizeService.isOnline(messageDTO) != null) {
             //判断文件是否写入成功，并且记录到数据库
-            if (!srcFile.isEmpty()) {
-                if (fileService.upLoadFile(srcFile, messageDTO.getAccount(), messageDTO.getPlatform())) {
+            if (!messageDTO.getSrcFile().isEmpty()) {
+                if (fileService.upLoadFile(messageDTO.getSrcFile(), messageDTO.getAccount(), messageDTO.getPlatform())) {
                     result.put(2, "上传成功");
                 } else {
                     result.put(1, "上传失败");
@@ -53,5 +44,10 @@ public class UpLoadFileController {
             result.put(1, "后台没有您的数据呦");
         }
         return result;
+    }
+
+    @GetMapping("/hello")
+    public String hello(){
+        return "234234";
     }
 }

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/css/bootstrap.min.css"></head>
+<body>
+<div th:insert="navigation :: nav"></div>
+<div id="app">
+    <input type="button" th:value="点击" v-on:click="a()">
+    {{info}}
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data () {
+            return {
+                info: null
+            }
+        },
+        mounted () {
+            axios.post('http://localhost:8080/t',
+                JSON.stringify(params),
+                {
+                    headers: {"Content-Type": "application/json;charset=UTF-8"}
+                })
+                .then(response => (this.info = response))
+                .catch(function (error) { // 请求失败处理
+                    console.log(error);
+                });
+        },
+        methods: {
+            a:function (){
+                let params = {
+                    "account":"491096821",
+                    "password":123,
+                    "platform":"web"
+                };
+                axios.post('http://localhost:8080/login',
+                    JSON.stringify(params),
+                    {
+                        headers: {"Content-Type": "application/json;charset=UTF-8"}
+                    })
+                    .then(response => (this.info = response))
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+            }
+        }
+    })
+</script>
+</body>
+</html>

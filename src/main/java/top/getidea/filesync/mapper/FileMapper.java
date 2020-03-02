@@ -15,7 +15,9 @@ public interface FileMapper {
     @Insert("INSERT INTO FILE(FILENAME,DESCRIPTION,fileSize,fileType,GMT_Create,GMT_Modified,CREATOR,fileUrl,token) VALUES(#{fileName},#{description},#{fileSize},#{fileType},#{gmtCreate},#{gmtModified},#{creator},#{fileUrl},#{token})")
     Integer insert(File file);
 
-    @Select("SELECT * FROM FILE WHERE CREATOR = #{CREATOR} ")
+    @Select("SELECT * FROM FILE WHERE CREATOR = #{CREATOR}")
     List<File> queryAllByAccount(@Param("CREATOR") String account);
 
+    @Select("SELECT * FROM FILE WHERE CREATOR = #{CREATOR} AND FILENAME = #{FILENAME}")
+    File queryByCreatorAndFileName(@Param("CREATOR") String account, @Param("FILENAME") String fileName);
 }

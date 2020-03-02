@@ -1,7 +1,10 @@
 package top.getidea.filesync.DTO;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @Description :
@@ -9,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * @Date: 2020-02-29 14:47
  */
 @Data
-public class MessageDTO {
+public class MessageDTO implements Serializable {
 
     @NotNull(message = "您还为登陆呦")
     private String account;
@@ -17,5 +20,7 @@ public class MessageDTO {
     @NotNull(message = "您还为登陆呦")
     private String password;
 
-    private String platform = "unknown";
+    private String platform;
+
+    private MultipartFile srcFile;
 }

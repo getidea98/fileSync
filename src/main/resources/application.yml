@@ -7,6 +7,8 @@ spring:
     username: root
     password: Abc331433
     driver-class-name: com.mysql.jdbc.Driver
+  thymeleaf:
+    cache: false
 
 github:
   client_id: 646df6fb04bb468d8d6a
@@ -20,3 +22,4 @@ save:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+
