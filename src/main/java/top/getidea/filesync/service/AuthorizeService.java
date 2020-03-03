@@ -37,7 +37,10 @@ public class AuthorizeService {
      */
     public Object login(MessageDTO messageDTO) {
         Map<Object,Object> resultMap = new HashMap<>();
-        User result = userMapper.queryByAccountAndPassword(messageDTO.getAccount(),messageDTO.getPassword());
+        User user = new User();
+        user.setAccount(messageDTO.getAccount());
+        user.setPassword(messageDTO.getPassword());
+        User result = userMapper.queryByAccountAndPassword(user);
         if(result == null){
             resultMap.put("1","后台没有您的数据呦");
         }else{
@@ -82,6 +85,9 @@ public class AuthorizeService {
     }
 
     public User isOnline(MessageDTO messageDTO){
-        return userMapper.queryByAccountAndPassword(messageDTO.getAccount(),messageDTO.getPassword());
+        User user = new User();
+        user.setPassword(messageDTO.getPassword());
+        user.setAccount(messageDTO.getAccount());
+        return userMapper.queryByAccountAndPassword(user);
     }
 }

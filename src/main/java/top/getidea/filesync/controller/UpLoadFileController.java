@@ -1,12 +1,16 @@
 package top.getidea.filesync.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import top.getidea.filesync.DTO.MessageDTO;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import top.getidea.filesync.module.User;
 import top.getidea.filesync.service.AuthorizeService;
 import top.getidea.filesync.service.FileService;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,27 +31,22 @@ public class UpLoadFileController {
 
     @PostMapping("/upLoadFile")
     @ResponseBody
-    public Object upLoadFileByAndroid(@Valid MessageDTO messageDTO) {
+    public Object upLoadFileByAndroid(@RequestParam("file") MultipartFile proFile,
+                                      HttpServletRequest request) {
         Map<Object, Object> result = new HashMap<>();
-        if (authorizeService.isOnline(messageDTO) != null) {
-            //判断文件是否写入成功，并且记录到数据库
-            if (!messageDTO.getSrcFile().isEmpty()) {
-                if (fileService.upLoadFile(messageDTO.getSrcFile(), messageDTO.getAccount(), messageDTO.getPlatform())) {
-                    result.put(2, "上传成功");
-                } else {
-                    result.put(1, "上传失败");
-                }
-            } else {
-                result.put(1, "请选择文件");
+        User user = (User) request.getSession().getAttribute("user");
+        String platform = request.getHeader("Platform");
+        if(!proFile.isEmpty()){
+            if(fileService.upLoadFile(proFile,user.getAccount(),platform)){
+                result.put("status",'2');
+                result.put("info",proFile.getOriginalFilename()+"上传成功");
+            }else {
+                result.put("status",'1');
+                result.put("info",proFile.getOriginalFilename()+"上传失败");
             }
-        } else {
-            result.put(1, "后台没有您的数据呦");
+        }else{
+            result.put("status",'1');
         }
         return result;
-    }
-
-    @GetMapping("/hello")
-    public String hello(){
-        return "234234";
     }
 }

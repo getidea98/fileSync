@@ -2,19 +2,14 @@ package top.getidea.filesync.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import top.getidea.filesync.module.User;
+import org.springframework.web.bind.annotation.*;
 import top.getidea.filesync.provide.FileUtil;
 import top.getidea.filesync.service.FileService;
 import top.getidea.filesync.service.UserService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Description :
@@ -37,19 +32,19 @@ public class DownLoadFileController {
     @Autowired
     FileService fileService;
 
-    @RequestMapping("/downloadFile")
+    @RequestMapping(value = "/downloadFile/{id}",method = RequestMethod.GET)
     @ResponseBody
     public Object downloadFile(HttpServletResponse response,
-                             HttpServletRequest request,
-                             @RequestParam(required = true)String fileName) {
-        User user = (User)request.getSession().getAttribute("user");
-        if(user != null){
-            top.getidea.filesync.module.File file = fileService.queryByCreatorAndFileName(user.getAccount(),fileName);
-            if(file != null){
-                String result = fileUtil.downloadFile(response, file.getFileUrl());
-                return result;
-            }
+                               @PathVariable(value = "id") String fileId){
+        top.getidea.filesync.module.File file = fileService.queryById(fileId);
+        Map<Object,Object> result;
+        if(file != null){
+           result = fileUtil.downloadFile(response, file.getFileUrl());
+        }else {
+            result = new HashMap<>();
+            result.put("status", '1');
+            result.put("info", "数据库中没有数据");
         }
-        return "fail";
+        return result;
     }
 }

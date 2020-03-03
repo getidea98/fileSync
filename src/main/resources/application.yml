@@ -1,5 +1,7 @@
 server:
   port: 8080
+  tomcat:
+    uri-encoding: UTF-8
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -7,8 +9,11 @@ spring:
     username: root
     password: Abc331433
     driver-class-name: com.mysql.jdbc.Driver
-  thymeleaf:
-    cache: false
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
 
 github:
   client_id: 646df6fb04bb468d8d6a

@@ -19,4 +19,5 @@ public class File {
     private long gmtModified;
     private String creator;
     private String token;
+    private String platform;
 }

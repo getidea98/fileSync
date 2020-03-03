@@ -2,7 +2,6 @@ package top.getidea.filesync.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import top.getidea.filesync.DTO.MessageDTO;
 import top.getidea.filesync.mapper.UserMapper;
 import top.getidea.filesync.module.User;
 
@@ -16,11 +15,15 @@ public class UserService {
 
     @Autowired
     UserMapper userMapper;
-    public User queryByAccount(MessageDTO messageDTO) {
-        return userMapper.queryByAccountAndPassword(messageDTO.getAccount(),messageDTO.getPassword());
+    public User queryByAccount(User user) {
+        return userMapper.queryByAccountAndPassword(user);
     }
 
     public Integer updateById(User user) {
         return userMapper.updateById(user);
+    }
+
+    public User queryByToken(String token) {
+        return userMapper.queryByToken(token);
     }
 }

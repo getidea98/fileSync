@@ -49,8 +49,8 @@ public class FileService {
             Path path = Paths.get(destFile.getAbsolutePath() + File.separator + srcFile.getOriginalFilename());
             Files.write(path, bytes);
             String token = UUID.randomUUID().toString();
-            fileMapper.insert(File2Bean(srcFile,creator,token));
-            userLogMapper.insert(UserLog2Bean(srcFile,creator,platform,token));
+            fileMapper.insert(File2Bean(srcFile, creator, token, platform));
+            userLogMapper.insert(UserLog2Bean(srcFile, creator, platform, token));
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -59,14 +59,14 @@ public class FileService {
     }
 
     /**
-     * @Dercription: 多参数合并成Bean
      * @param srcFile
      * @param creator
      * @param platform
      * @param id
      * @return
+     * @Dercription: 多参数合并成Bean
      */
-    UserLog UserLog2Bean(MultipartFile srcFile,String creator,String platform,String id) {
+    UserLog UserLog2Bean(MultipartFile srcFile, String creator, String platform, String id) {
         UserLog userLog = new UserLog();
         userLog.setAccount(creator);
         userLog.setGmtModified(System.currentTimeMillis());
@@ -78,14 +78,15 @@ public class FileService {
     }
 
     /**
-     * @Dercription: 多参数合并成Bean
      * @param srcFile
      * @param creator
      * @param token
      * @return
+     * @Dercription: 多参数合并成Bean
      */
-    top.getidea.filesync.module.File File2Bean(MultipartFile srcFile, String creator, String token){
+    top.getidea.filesync.module.File File2Bean(MultipartFile srcFile, String creator, String token, String platform) {
         top.getidea.filesync.module.File file = new top.getidea.filesync.module.File();
+        file.setPlatform(platform);
         file.setCreator(creator);
         file.setFileName(srcFile.getOriginalFilename());
         file.setFileSize(srcFile.getSize());
@@ -98,15 +99,20 @@ public class FileService {
     }
 
     /**
+     * @param: account
+     * @return: List<top.getidea.filesync.module.File>
      * @Description: 根据creator查询所有文件;
-     * @param account
-     * @return
      */
-    public List<top.getidea.filesync.module.File> queryAllByAccount(String  account) {
+    public List<top.getidea.filesync.module.File> queryAllByAccount(String account) {
         return fileMapper.queryAllByAccount(account);
     }
 
-    public top.getidea.filesync.module.File queryByCreatorAndFileName(String account, String fileName) {
-        return fileMapper.queryByCreatorAndFileName(account,fileName);
+    public top.getidea.filesync.module.File queryById(String fileId) {
+        return fileMapper.queryById(fileId);
+    }
+
+    public Integer delFileById(String id) {
+        Integer result = fileMapper.delFileById(id);
+        return result;
     }
 }

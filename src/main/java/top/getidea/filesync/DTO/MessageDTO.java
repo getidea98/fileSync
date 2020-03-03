@@ -1,7 +1,6 @@
 package top.getidea.filesync.DTO;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -21,6 +20,4 @@ public class MessageDTO implements Serializable {
     private String password;
 
     private String platform;
-
-    private MultipartFile srcFile;
 }

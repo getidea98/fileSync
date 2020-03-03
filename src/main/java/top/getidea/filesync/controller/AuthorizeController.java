@@ -3,13 +3,10 @@ package top.getidea.filesync.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import sun.plugin2.message.Message;
 import top.getidea.filesync.DTO.GitHubAccess;
 import top.getidea.filesync.DTO.GitHubAccessTokenDTO;
 import top.getidea.filesync.DTO.MessageDTO;
-import top.getidea.filesync.mapper.UserMapper;
 import top.getidea.filesync.module.User;
 import top.getidea.filesync.provide.GitHubProvide;
 import top.getidea.filesync.service.AuthorizeService;
@@ -50,22 +47,27 @@ public class AuthorizeController {
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     @ResponseBody
-    public Object login(@RequestBody @Valid MessageDTO messageDTO,
-                        Model model){
+    public Object login(@RequestBody @Valid MessageDTO messageDTO){
         Map<Object,Object> result = new HashMap<>();
-        User user = userService.queryByAccount(messageDTO);
+        User user = userService.queryByAccount(messageDTO2User(messageDTO));
         //判断密码是否正确
         if(user != null){
             user = user2Bean(user);
             userService.updateById(user);
-            model.addAttribute("user",user);
             result.put("status",2);
-            result.put("data",user);
+            result.put("token",user.getToken());
         }else{
             result.put("status",1);
-            result.put("data",null);
+            result.put("token",null);
         }
         return result;
+    }
+
+    private User messageDTO2User(MessageDTO messageDTO) {
+        User user = new User();
+        user.setAccount(messageDTO.getAccount());
+        user.setPassword(messageDTO.getPassword());
+        return user;
     }
 
 
@@ -131,6 +133,19 @@ public class AuthorizeController {
         user.setToken(token);
         user.setGmtModified(System.currentTimeMillis());
         return user;
+    }
+
+    @PostMapping("queryToken")
+    @ResponseBody
+    public Object queryToken(String token){
+        Map<Object,Object> result = new HashMap<>();
+        if (userService.queryByToken(token) != null){
+            //存在这个token
+            result.put("status",2);
+        }else{
+            result.put("status",1);
+        }
+        return result;
     }
 
 }

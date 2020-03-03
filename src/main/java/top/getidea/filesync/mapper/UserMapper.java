@@ -13,8 +13,8 @@ import top.getidea.filesync.module.User;
 @Mapper
 public interface UserMapper {
 
-    @Select("SELECT * FROM USER WHERE ACCOUNT = #{ACCOUNT} AND PASSWORD = #{PASSWORD}")
-    User queryByAccountAndPassword(@Param("ACCOUNT") String ACCOUNT, @Param("PASSWORD") String password);
+    @Select("SELECT * FROM USER WHERE ACCOUNT = #{account} AND PASSWORD = #{password}")
+    User queryByAccountAndPassword(User user);
 
     @Insert("INSERT INTO USER(ACCOUNT,NAME,GMT_CREATE,GMT_Modified) VALUES(#{account},#{name},#{gmtCreate},#{gmtModified})")
     Integer insert(User user);
