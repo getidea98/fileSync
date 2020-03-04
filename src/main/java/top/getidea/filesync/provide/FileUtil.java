@@ -29,6 +29,7 @@ public class FileUtil {
             // 配置文件下载
             response.setHeader("content-type", "application/octet-stream");
             response.setContentType("application/octet-stream");
+            response.setContentLengthLong(file.length());
             // 下载文件能正常显示中文
             try {
                 response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileSrc.split(File.separator)[fileSrc.split(File.separator).length-1], "UTF-8"));
@@ -37,17 +38,16 @@ public class FileUtil {
             }
             // 实现文件下载
             byte[] buffer = new byte[1024];
-            FileInputStream fis = null;
             BufferedInputStream bis = null;
             try {
-                fis = new FileInputStream(file);
-                bis = new BufferedInputStream(fis);
+                bis = new BufferedInputStream(new FileInputStream(file));
                 OutputStream os = response.getOutputStream();
                 int i = bis.read(buffer);
                 while (i != -1) {
                     os.write(buffer, 0, i);
                     i = bis.read(buffer);
                 }
+                os.flush();
                 result.put("status",2);
                 result.put("info","Success");
 
@@ -59,13 +59,6 @@ public class FileUtil {
                 if (bis != null) {
                     try {
                         bis.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (fis != null) {
-                    try {
-                        fis.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

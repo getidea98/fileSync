@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @Description :
  * @Author : Getidea
  * @Date: 2020-03-01 15:24
  */
+
 
 @RestController
 public class DownLoadFileController {
@@ -32,19 +32,21 @@ public class DownLoadFileController {
     @Autowired
     FileService fileService;
 
-    @RequestMapping(value = "/downloadFile/{id}",method = RequestMethod.GET)
+    @CrossOrigin
+    @RequestMapping(value = "/downloadFile/{id}")
     @ResponseBody
-    public Object downloadFile(HttpServletResponse response,
-                               @PathVariable(value = "id") String fileId){
+    public void downloadFile(HttpServletResponse response,
+                               @PathVariable(value = "id") String fileId) {
         top.getidea.filesync.module.File file = fileService.queryById(fileId);
-        Map<Object,Object> result;
-        if(file != null){
-           result = fileUtil.downloadFile(response, file.getFileUrl());
-        }else {
+        Map<Object, Object> result;
+        if (file != null) {
+            result = fileUtil.downloadFile(response, file.getFileUrl());
+        } else {
             result = new HashMap<>();
             result.put("status", '1');
             result.put("info", "数据库中没有数据");
         }
-        return result;
+        //response.setStatus(303);
+        //return result;
     }
 }

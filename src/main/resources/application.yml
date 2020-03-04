@@ -9,6 +9,10 @@ spring:
     username: root
     password: Abc331433
     driver-class-name: com.mysql.jdbc.Driver
+  servlet:
+    multipart:
+      max-file-size: -1 #单个文件大小， -1 不限制
+      max-request-size: -1 #单词请求文件大小
   http:
     encoding:
       force: true
